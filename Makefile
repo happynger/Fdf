@@ -6,7 +6,7 @@
 #    By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/12/13 12:25:04 by otahirov          #+#    #+#              #
-#    Updated: 2018/12/13 12:35:42 by otahirov         ###   ########.fr        #
+#    Updated: 2018/12/13 12:41:28 by otahirov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,7 @@ clean :
 fclean : clean
 	@$(RM) $(NAME)
 
+re : fclean all
 
 git :
 	@git add .
