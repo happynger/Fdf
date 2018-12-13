@@ -6,7 +6,7 @@
 #    By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/12/13 12:25:04 by otahirov          #+#    #+#              #
-#    Updated: 2018/12/13 12:41:28 by otahirov         ###   ########.fr        #
+#    Updated: 2018/12/13 13:11:48 by otahirov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ $(NAME) :
 	@echo "Generating 42 lib."
 	@make -C libft
 	@echo "Done."
-	@echo "Generating the $NAME"
+	@echo "Generating the $(NAME)"
 	@$(CC) $(FLAGS) $(SRC) $(MINILIBX) $(LIBFT) $(INC) -o $@
 	@echo "Done."
 

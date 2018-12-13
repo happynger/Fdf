@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_error.c                                         :+:      :+:    :+:   */
+/*   ft_arrlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/01 14:25:33 by otahirov          #+#    #+#             */
-/*   Updated: 2018/12/13 14:16:17 by otahirov         ###   ########.fr       */
+/*   Created: 2018/12/13 14:11:00 by otahirov          #+#    #+#             */
+/*   Updated: 2018/12/13 14:12:37 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void		ft_error(char *msg)
+size_t	ft_arrlen(char **arr)
 {
-	if (msg != NULL)
-	{
-		ft_putstr(msg);
-		ft_putchar('\n');
-	}
-	exit(1);
+	size_t	ln;
+
+	ln = 0;
+	while (arr[ln] != NULL)
+		ln++;
+	return (ln);
 }

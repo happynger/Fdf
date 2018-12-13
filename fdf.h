@@ -1,23 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_error.c                                         :+:      :+:    :+:   */
+/*   fdf.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/11/01 14:25:33 by otahirov          #+#    #+#             */
-/*   Updated: 2018/12/13 14:16:17 by otahirov         ###   ########.fr       */
+/*   Created: 2018/12/13 12:42:47 by otahirov          #+#    #+#             */
+/*   Updated: 2018/12/13 14:07:17 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef FDF_H
+# define FDF_H
 
-void		ft_error(char *msg)
-{
-	if (msg != NULL)
-	{
-		ft_putstr(msg);
-		ft_putchar('\n');
-	}
-	exit(1);
-}
+# include "mlx.h"
+# include "libft/includes/get_next_line.h"
+# include "libft/includes/libft.h"
+
+#endif
