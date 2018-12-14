@@ -6,7 +6,7 @@
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/13 14:00:59 by otahirov          #+#    #+#             */
-/*   Updated: 2018/12/13 16:12:15 by otahirov         ###   ########.fr       */
+/*   Updated: 2018/12/13 17:15:04 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,15 @@ void	file_read(t_info *a)
 {
 	char	*line;
 
-	while (get_next_line(a->fd, &line) != 0)
+	while (get_next_line(a->fd, &line) == 1)
 		line_read(line, &a->pix);
-	
+	close(a->fd);
 }
 
 void	line_read(char *line, t_pixel **head)
 {
 	static size_t	nbvalues;
-	static int		y;
+	static int		i[2];
 	int				x;
 	char			**values;
 	t_pixel			*pix;
@@ -36,16 +36,15 @@ void	line_read(char *line, t_pixel **head)
 	if (nbvalues == 0)
 		nbvalues = ft_arrlen(values);
 	else
-		if (nbvalues != ft_arrlen(values))
-			ft_error("Found wrong line length. Exiting");
+		ERROR("Found wrong line length. Exiting", nbvalues, values);
 	while (values[x] != NULL)
 	{
 		if (pix)
-			pix->next = pixel_init(x, y, ft_atol(values[x]));
+			pix->next = pixel_init(x, i[0], ft_atol(values[x]), i[1]++);
 		else
-			pix = pixel_init(x, y, ft_atol(values[x]));
+			pix = pixel_init(x, i[0], ft_atol(values[x]), i[1]++);
 		pix = pix->next;
 		x++;
 	}
-	y++;
+	i[0]++;
 }
