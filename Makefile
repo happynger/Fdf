@@ -6,7 +6,7 @@
 #    By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/12/13 12:25:04 by otahirov          #+#    #+#              #
-#    Updated: 2018/12/13 13:11:48 by otahirov         ###   ########.fr        #
+#    Updated: 2019/01/04 17:31:32 by otahirov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ LIBFT = -L libft -lft
 
 SRC = *.c
 BIN = libft/*.o
-INC = -I libft/includes -I minilibx_macos/
+INC = -I libft/includes -I minilibx_macos/ -I.
 
 CC = gcc
 FLAGS = -Wall -Werror -Wextra
@@ -41,6 +41,8 @@ fclean : clean
 
 re : fclean all
 
+debug :
+	@$(CC) -g $(FLAGS) $(SRC) $(MINILIBX) $(LIBFT) $(INC) -o $@
 git :
 	@git add .
 	@git commit -m "Automated Update $(shell date | head -c 19 | tail -c 15 && echo)"

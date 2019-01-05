@@ -5,90 +5,86 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/13 15:09:42 by otahirov          #+#    #+#             */
-/*   Updated: 2018/12/13 17:07:19 by otahirov         ###   ########.fr       */
+/*   Created: 2019/01/04 15:42:48 by otahirov          #+#    #+#             */
+/*   Updated: 2019/01/05 15:15:54 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-static void	putlinelow(long x0, long y0, long x1, long y1, t_info *a)
+static void	draw_line(t_info *drawl, int *tab, int x, int y)
 {
-	long	d[2];
-	int		dir[2];
-	long	c[2];
+	int		tabx[2];
+	int		taby[2];
+	int		b[2];
+	int		x0;
+	int		y0;
 
-	d[0] = x1 - x0;
-	d[1] = y1 - y0;
-	dir[1] = 1;
-	if (d[1] < 0)
+	x0 = tab[0];
+	y0 = tab[1];
+	tabx[0] = abs(x - x0);
+	tabx[1] = (x0 < x) ? 1 : -1;
+	taby[0] = abs(y - y0);
+	taby[1] = (y0 < y) ? 1 : -1;
+	b[0] = (tabx[0] > taby[0] ? tabx[0] : -taby[0]) / 2;
+	while (x0 != x || y0 != y)
 	{
-		dir[1] = -1;
-		d[1] = -d[1];
+		mlx_pixel_put(drawl->mlx, drawl->win, x0, y0, drawl->color);
+		b[1] = b[0];
+		b[1] > -tabx[0] ? b[0] -= taby[0] : 1 == 1;
+		b[1] > -tabx[0] ? x0 += tabx[1] : 1 == 1;
+		b[1] < taby[0] ? b[0] += tabx[0] : 1 == 1;
+		b[1] < taby[0] ? y0 += taby[1] : 1 == 1;
 	}
-	dir[0] = 2 * d[1] - d[0];
-	c[1] = y0;
-	c[0] = x0;
-	while (c[0] < x1)
+}
+
+static void	draw_lines(t_info *drawl, int x, int y)
+{
+	int		tab[2];
+
+	tab[0] = drawl->dx + (x - y);
+	tab[1] = drawl->dy + drawl->map[y / drawl->sy][x / drawl->sx] *
+			 drawl->z + x + y;
+	if (x / drawl->sx < drawl->rows - 1 && y / drawl->sy < drawl->lines)
+		draw_line(drawl, tab, drawl->dx + ((x + drawl->sx) - y),
+		drawl->dy + drawl->map[y / drawl->sy][x / drawl->sx + 1] *
+		drawl->z + (x + drawl->sx) + y);
+	if (y / drawl->sy < drawl->lines - 1 && x / drawl->sx < drawl->rows)
+		draw_line(drawl, tab, drawl->dx + (x - (y + drawl->sy)),
+		drawl->dy + drawl->map[y / drawl->sy + 1][x / drawl->sx] *
+		drawl->z + x + (y + drawl->sy));
+}
+
+static void	check_drawing(t_info *drawl)
+{
+	if (drawl->frame == 0)
 	{
-		mlx_pixel_put(a->mlx, a->win, c[0], c[1], WHITE);
-		if (dir > 0)
+		drawl->z = -5;
+		drawl->dx = WIDTH * 0.4;
+		drawl->dy = 20;
+		drawl->sx = (WIDTH * 0.7) / (drawl->rows - 1);
+		drawl->sy = (HEIGHT * 0.5) / (drawl->lines - 1);
+		drawl->color = WHITE;
+	}
+	drawl->frame++;
+}
+
+void		draw(t_info *drawl)
+{
+	int		x;
+	int		y;
+
+	x = 0;
+	y = 0;
+	check_drawing(drawl);
+	while (x / drawl->sx < drawl->rows || y / drawl->sy < drawl->lines - 1)
+	{
+		if (x / drawl->sx == drawl->rows)
 		{
-			c[1] = c[1] + dir[1];
-			dir[0] = dir[0] - 2 * d[0];
+			x = 0;
+			y += drawl->sy;
 		}
-		dir[0] = dir[0] + 2 * d[1];
+		draw_lines(drawl, x, y);
+		x += drawl->sx;
 	}
-}
-
-static void	putlinehigh(long x0, long y0, long x1, long y1, t_info *a)
-{
-	long	d[2];
-	int		dir[2];
-	long	c[2];
-
-	d[0] = x1 - x0;
-	d[1] = y1 - y0;
-	dir[1] = 1;
-	if (d[0] < 0)
-	{
-		dir[1] = -1;
-		d[0] = -d[0];
-	}
-	dir[0] = 2 * d[0] - d[1];
-	c[1] = y0;
-	c[0] = x0;
-	while (c[1] < y1)
-	{
-		mlx_pixel_put(a->mlx, a->win, c[0], c[1], WHITE);
-		if (dir > 0)
-		{
-			c[0] = c[0] + dir[1];
-			dir[0] = dir[0] - 2 * d[1];
-		}
-		dir[0] = dir[0] + 2 * d[0];
-	}
-}
-
-void	fdf_putline(long x0, long y0, long x1, long y1, t_info *a)
-{
-	if (abs(y1 - y0) < abs(x1 - x0))
-	{
-		if (x0 > x1)
-			putlinelow(x1, y1, x0, y0, a);
-		else
-			putlinelow(x0, y0, x1, y1, a);
-	}
-	else
-	{
-		if (y0 > y1)
-			putlinehigh(x1, y1, x0, y0, a);
-		else
-			putlinehigh(x0, y0, x1, y1, a);
-	}
-}
-
-void	fdf_pixel_put(t_info *a)
-{
-
 }

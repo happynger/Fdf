@@ -6,90 +6,112 @@
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/15 10:39:40 by otahirov          #+#    #+#             */
-/*   Updated: 2018/09/19 12:41:05 by otahirov         ###   ########.fr       */
+/*   Updated: 2019/01/05 13:15:00 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static size_t	ft_strlen_d(char const *s, char c)
+static int	ft_split_count(char const *s, char c)
 {
-	size_t	ln;
+	int	i;
+	int	d;
+	int	wrd;
 
-	ln = 0;
-	while (s[ln] != c && s[ln])
-		ln++;
-	return (ln);
-}
-
-static size_t	ft_arrlen(char const *s, char c)
-{
-	size_t	ln;
-
-	ln = 0;
-	while (*s)
+	i = 0;
+	d = 0;
+	wrd = 0;
+	while (s[i])
 	{
-		if (*s == c)
+		if (s[i++] != c)
 		{
-			while (*(s + 1) == c && *(s + 1))
-				s++;
-			if (*(s + 1))
-				ln++;
+			if (d == 0)
+			{
+				d = 1;
+				wrd++;
+			}
 		}
-		s++;
+		else
+			d = 0;
 	}
-	return (ln);
+	return (wrd);
 }
 
-static int		ft_logic(char const *s, char c, char **strarray, int *i)
+static int	ft_split_len(char const *s, char c, int cword)
 {
-	int		b;
-	char	*temp;
-	int		l;
+	int i;
+	int d;
+	int wrd;
+	int len;
 
-	b = 0;
-	l = 0;
-	temp = ft_strnew(ft_strlen_d(s, c));
-	if (temp == NULL)
-		return (l);
-	while (*s != c && *s)
-	{
-		temp[b++] = *s++;
-		l++;
-	}
-	strarray[*i] = temp;
-	*i += 1;
-	while (*s == c && *s)
-	{
-		s++;
-		l++;
-	}
-	return (l);
+	len = 0;
+	i = 0;
+	d = 0;
+	wrd = 0;
+	while (s[i])
+		if (s[i++] != c)
+		{
+			if (d == 0)
+			{
+				d = 1;
+				wrd++;
+			}
+			if (d == 1 && wrd == cword)
+				len++;
+		}
+		else
+			d = 0;
+	return (len);
 }
 
-char			**ft_strsplit(char const *s, char c)
+static int	ft_split_start(char const *s, char c, int cword)
 {
-	char		**strarray;
-	int			i;
-	int			b;
+	int	i;
+	int d;
+	int wrd;
+	int len;
 
-	b = 0;
-	if (!s)
+	len = 0;
+	i = 0;
+	d = 0;
+	wrd = 0;
+	while (s[i])
+		if (s[i++] != c)
+		{
+			if (d == 0)
+			{
+				d = 1;
+				wrd++;
+				if (wrd == cword)
+					return (i - 1);
+			}
+		}
+		else
+			d = 0;
+	return (len);
+}
+
+char		**ft_strsplit(char const *s, char c)
+{
+	char	**tab;
+	int		wrd;
+	int		i;
+	int		start;
+	int		len;
+
+	if (s == NULL)
+		return (NULL);
+	wrd = ft_split_count(s, c);
+	if (!(tab = malloc(sizeof(char *) * (wrd + 1))))
 		return (NULL);
 	i = 0;
-	strarray = (char **)malloc((ft_arrlen(s, c) + 1) * sizeof(*strarray));
-	if (strarray == NULL)
-		return (NULL);
-	while (*s == c)
-		s++;
-	while (*s)
+	while (i < wrd)
 	{
-		b = ft_logic(s, c, strarray, &i);
-		if (b != 0)
-			s += b;
-		else
-			return (NULL);
+		start = ft_split_start(s, c, i + 1);
+		len = ft_split_len(s, c, i + 1);
+		tab[i] = ft_strsub(s, (unsigned int)start, (size_t)len);
+		i++;
 	}
-	strarray[i] = NULL;
-	return (strarray);
+	tab[i] = NULL;
+	return (tab);
 }

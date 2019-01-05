@@ -6,7 +6,7 @@
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/10 16:02:50 by otahirov          #+#    #+#             */
-/*   Updated: 2018/12/13 14:13:00 by otahirov         ###   ########.fr       */
+/*   Updated: 2019/01/05 12:31:20 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,25 +25,13 @@
 # endif
 
 # define SWAP(a,b) a^=b, b^=a, a^=b
-# define CHECK_NULL_GNL(x) if ((x) == NULL) return (-1)
+# define CHECK_NULL_INT(x) if ((x) == NULL) return (-1)
 # define CHECK_NULL(x) if ((x) == NULL) return (NULL)
 
+# define END '\0'
+# define ENDL '\n'
+
 typedef int				t_bool;
-
-# ifdef GET_NEXT_LINE_H
-
-typedef struct			s_gnl
-{
-	char				*content;
-	int					fd;
-	int					br;
-	struct s_gnl		*next;
-}						t_gnl;
-
-t_gnl					*ft_gnlnew(char const *s);
-void					ft_gnladdend(t_gnl **alst, t_gnl *new);
-
-# endif
 
 typedef struct			s_list
 {

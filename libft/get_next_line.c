@@ -5,124 +5,93 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/09/26 13:31:03 by otahirov          #+#    #+#             */
-/*   Updated: 2018/11/01 12:50:31 by otahirov         ###   ########.fr       */
+/*   Created: 2019/01/05 12:05:40 by otahirov          #+#    #+#             */
+/*   Updated: 2019/01/05 12:30:11 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "includes/get_next_line.h"
 
-void	initiate_list(const int fd, t_gnl **lst)
+static char *join(char *buff, char *tab)
 {
-	t_gnl	*list;
-	t_gnl	*head;
-
-	list = *lst;
-	head = *lst;
-	if (list == NULL)
-	{
-		list = ft_gnlnew(NULL);
-		list->fd = fd;
-		*lst = list;
-	}
-	while (list->next && list->fd != fd)
-		list = list->next;
-	if (list->fd == fd)
-		return ;
-	ft_gnladdend(&list, ft_gnlnew(NULL));
-	*lst = head;
-	while (list->next)
-		list = list->next;
-	list->fd = fd;
-}
-
-int		ft_free(char **arr, int ret, char *str_read)
-{
-	int		i;
+	size_t	i;
+	size_t	j;
+	char	*ptr;
 
 	i = 0;
-	while (i < 3 && ret != -1)
-		ft_strdel(&arr[i++]);
-	ft_strdel(&str_read);
-	if (ret != -1)
-		free(arr);
-	arr = NULL;
-	return (ret);
+	j = 0;
+	if (buff)
+		i = ft_strlen(buff);
+	if (tab)
+		j = ft_strlen(tab);
+	CHECK_NULL(ptr = (char *)malloc(sizeof(char) * (i + j + 1)));
+	ft_memcpy(ptr, buff, i);
+	ft_memcpy(ptr, tab, j);
+	ptr[i + j] = '\0';
+	free(buff);
+	ft_bzero(tab, BUFF_SIZE + 1);
+	return (ptr);
 }
 
-char	**ft_strsplit_nl(char *str, int bytes_read, t_gnl *list, const int fd)
+static int	endline(char *buff)
 {
-	char	**arr;
-	char	*s;
-	int		i[2];
+	int		counter;
 
-	CHECK_NULL(arr = (char **)malloc(3 * sizeof(*arr)));
-	MV_FD(list);
-	if (list->content)
-		list->content = ft_strappend(list->content, str, AA3, bytes_read);
-	else
-		list->content = ft_strdup(str);
-	s = list->content;
-	MV_NL(s);
-	if ((!*s && bytes_read == BUFF_SIZE) || bytes_read == -1)
+	counter = 0;
+	while (buff[counter] != ENDL && buff[counter])
+		counter++;
+	if (buff[counter] == ENDL)
 	{
-		free(arr);
-		return (NULL);
+		buff[counter] = END;
+		return (counter);
 	}
-	i[0] = s - list->content;
-	i[1] = ft_strlen(s + 1);
-	arr[0] = ft_strnew(i[0]);
-	arr[1] = ft_strnew(i[1]);
-	ft_strncpy(arr[1], ++s, i[1]);
-	s = list->content;
-	ft_strncpy(arr[0], s, i[0] + 1);
-	return (arr);
+	else
+		return (-1);
 }
 
-int		ft_copy(char ***line, char **arr, t_gnl *list)
+static int	verify(char **buff, char **tab, char **line)
 {
-	char	*s;
-	int		i;
+	char	*ptr;
+	int		finale;
 
-	i = 0;
-	CHECK_NULL_GNL(s = ft_strnew(ft_strlen(arr[2])));
-	while (arr[2][i] && arr[2][i] != '\n')
+	*buff = join(*buff, *tab);
+	finale = endline(*buff);
+	if (finale > -1)
 	{
-		s[i] = arr[2][i];
-		i++;
-	}
-	**line = s;
-	if (arr[2][i] == '\0' && list->br == 0 && !ft_strcmp(list->content, ""))
-		return (0);
-	else
-	{
-		ft_strdel(&list->content);
-		list->content = ft_strdup(arr[1]);
+		*line = ft_strdup(*buff);
+		ptr = *buff;
+		*buff = ft_strdup(*buff + finale + 1);
+		free(ptr);
 		return (1);
 	}
+	return (0);
 }
 
-int		get_next_line(const int fd, char **line)
+int			get_next_line(int const fd, char **line)
 {
-	char			*str_read;
-	int				bytes_read;
-	char			**str_array;
-	static t_gnl	*list[2];
+	static char	*buff[256];
+	char		*tmp;
+	int			ret;
+	int			result;
 
-	if (ERR)
+	tmp = ft_strnew(BUFF_SIZE);
+	if (!line || BUFF_SIZE <= 0 || fd < 0 || (ret = read(fd, tmp, 0)) < 0)
 		return (-1);
-	initiate_list(fd, &list[0]);
-	CHECK_NULL_GNL(str_read = ft_strnew(BUFF_SIZE));
-	while ((str_array = ft_strsplit_nl(str_read,
-		bytes_read = read(fd, str_read, BUFF_SIZE), list[0], fd)) == NULL)
-		if (bytes_read == -1)
-			return (ft_free(str_array, -1, str_read));
-	list[1] = list[0];
-	while (list[1]->fd != fd && list[1]->next)
-		list[1] = list[1]->next;
-	list[1]->br = bytes_read;
-	str_array[2] = ft_strnew(BUFF_SIZE);
-	if (ft_strcmp(str_array[2], str_array[0]) != 0)
-		str_array[2] = ft_strappend(str_array[2], str_array[0], AA1, AA2);
-	return (ft_free(str_array, ft_copy(&line, str_array, list[1]), str_read));
+	while ((ret = read(fd, tmp, BUFF_SIZE)) > 0)
+	{
+		result = verify(&buff[fd], &tmp, line);
+		free(tmp);
+		if (result == 1)
+			return (1);
+		tmp = ft_strnew(BUFF_SIZE);
+	}
+	if ((result = verify(&buff[fd], &tmp, line)))
+		return (1);
+	else if (ft_strlen(buff[fd]) > 0)
+	{
+		*line = ft_strdup(buff[fd]);
+		ft_strdel(&buff[fd]);
+		return (1);
+	}
+	return (0);
 }

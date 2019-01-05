@@ -6,45 +6,77 @@
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/13 14:00:59 by otahirov          #+#    #+#             */
-/*   Updated: 2018/12/13 17:15:04 by otahirov         ###   ########.fr       */
+/*   Updated: 2019/01/05 15:16:48 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
+#include <stdio.h>
 
-void	file_read(t_info *a)
+static int	init_tab(t_info *info, char *line)
+{
+	int		x;
+	char	**tab;
+
+	x = 0;
+	tab = ft_strsplit(line, ' ');
+	while (tab[x] != NULL)
+	{
+		if (tab[x] != NULL)
+			free(tab[x]);
+		x++;
+	}
+	if (info->lines == 0)
+		info->rows = x;
+	else
+		if (x != info->rows)
+			return (-1);
+	free(line);
+	free(tab);
+	info->lines++;
+	return (0);
+}
+
+static void	init_info(t_info *info)
 {
 	char	*line;
 
-	while (get_next_line(a->fd, &line) == 1)
-		line_read(line, &a->pix);
-	close(a->fd);
+	line = NULL;
+	info->lines = 0;
+	info->rows = 0;
+	while (get_next_line(info->fd, &line) > 0)
+	{
+		if (init_tab(info, line) == -1)
+			ft_error("ERR: The number of elements per line aren't consistent");
+	}
+	info->map = ft_memalloc(sizeof(int) * info->lines);
+	close(info->fd);
+	info->fd = open(info->name, O_RDONLY);
 }
 
-void	line_read(char *line, t_pixel **head)
+void		parser(t_info *info)
 {
-	static size_t	nbvalues;
-	static int		i[2];
-	int				x;
-	char			**values;
-	t_pixel			*pix;
+	char	*line;
+	char	**tab;
+	int		x[3];
 
-	x = 0;
-	pix = *head;
-	MVTOEND(pix);
-	values = ft_strsplit(line, ' ');
-	if (nbvalues == 0)
-		nbvalues = ft_arrlen(values);
-	else
-		ERROR("Found wrong line length. Exiting", nbvalues, values);
-	while (values[x] != NULL)
+	x[0] = 0;
+	init_info(info);
+	while ((x[2] = get_next_line(info->fd, &line)) > 0)
 	{
-		if (pix)
-			pix->next = pixel_init(x, i[0], ft_atol(values[x]), i[1]++);
-		else
-			pix = pixel_init(x, i[0], ft_atol(values[x]), i[1]++);
-		pix = pix->next;
-		x++;
+		x[1] = 0;
+		tab = ft_strsplit(line, ' ');
+		info->map[x[0]] = ft_memalloc(sizeof(int) * info->rows);
+		while (tab[x[1]] != NULL)
+		{
+			info->map[x[0]][x[1]] = ft_atoi(tab[x[1]]);
+			free(tab[x[1]]);
+			x[1]++;
+		}
+		ft_strdel(&line);
+		free(tab);
+		x[0]++;
 	}
-	i[0]++;
+	if (x[2] == -1)
+		ft_error("ERROR: get_next_line returned <:-1:>");
 }
