@@ -6,7 +6,7 @@
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/12 10:12:23 by otahirov          #+#    #+#             */
-/*   Updated: 2018/10/08 20:04:13 by otahirov         ###   ########.fr       */
+/*   Updated: 2019/01/05 17:05:20 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,16 @@
 
 char	*ft_strnew(size_t size)
 {
+	size_t	i;
 	char	*str;
-	char	*s;
 
-	size += 2;
-	str = (char *)malloc(size * sizeof(*str));
-	if (str == NULL)
+	i = 0;
+	if (!(str = (char *)malloc(sizeof(char) * size + 1)))
 		return (NULL);
-	s = str;
-	while (size > 0)
+	while (i <= size)
 	{
-		*s++ = '\0';
-		size--;
+		str[i] = '\0';
+		i++;
 	}
 	return (str);
 }

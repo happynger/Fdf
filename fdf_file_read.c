@@ -6,12 +6,11 @@
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/13 14:00:59 by otahirov          #+#    #+#             */
-/*   Updated: 2019/01/05 15:16:48 by otahirov         ###   ########.fr       */
+/*   Updated: 2019/01/05 17:10:35 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-#include <stdio.h>
 
 static int	init_tab(t_info *info, char *line)
 {
@@ -20,17 +19,18 @@ static int	init_tab(t_info *info, char *line)
 
 	x = 0;
 	tab = ft_strsplit(line, ' ');
-	while (tab[x] != NULL)
+	while (tab[x])
 	{
-		if (tab[x] != NULL)
-			free(tab[x]);
+		free(tab[x]);
 		x++;
 	}
 	if (info->lines == 0)
 		info->rows = x;
 	else
+	{
 		if (x != info->rows)
 			return (-1);
+	}
 	free(line);
 	free(tab);
 	info->lines++;
@@ -40,16 +40,17 @@ static int	init_tab(t_info *info, char *line)
 static void	init_info(t_info *info)
 {
 	char	*line;
+	int		ret;
 
 	line = NULL;
 	info->lines = 0;
 	info->rows = 0;
-	while (get_next_line(info->fd, &line) > 0)
+	while ((ret = get_next_line(info->fd, &line)) > 0)
 	{
 		if (init_tab(info, line) == -1)
 			ft_error("ERR: The number of elements per line aren't consistent");
 	}
-	info->map = ft_memalloc(sizeof(int) * info->lines);
+	info->map = ft_memalloc(sizeof(int*) * info->lines);
 	close(info->fd);
 	info->fd = open(info->name, O_RDONLY);
 }
@@ -73,7 +74,6 @@ void		parser(t_info *info)
 			free(tab[x[1]]);
 			x[1]++;
 		}
-		ft_strdel(&line);
 		free(tab);
 		x[0]++;
 	}

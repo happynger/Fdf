@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/09/15 10:39:40 by otahirov          #+#    #+#             */
-/*   Updated: 2019/01/05 13:15:00 by otahirov         ###   ########.fr       */
+/*   Created: 2018/11/16 14:53:20 by otahirov          #+#    #+#             */
+/*   Updated: 2019/01/05 16:56:05 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "includes/libft.h"
 
-static int	ft_split_count(char const *s, char c)
+static int		ft_split_count(char const *s, char c)
 {
 	int	i;
 	int	d;
@@ -37,12 +37,12 @@ static int	ft_split_count(char const *s, char c)
 	return (wrd);
 }
 
-static int	ft_split_len(char const *s, char c, int cword)
+static int		ft_split_len(char const *s, char c, int cword)
 {
-	int i;
-	int d;
-	int wrd;
-	int len;
+	int	i;
+	int	d;
+	int	wrd;
+	int	len;
 
 	len = 0;
 	i = 0;
@@ -64,12 +64,12 @@ static int	ft_split_len(char const *s, char c, int cword)
 	return (len);
 }
 
-static int	ft_split_start(char const *s, char c, int cword)
+static int		ft_split_start(char const *s, char c, int cword)
 {
 	int	i;
-	int d;
-	int wrd;
-	int len;
+	int	d;
+	int	wrd;
+	int	len;
 
 	len = 0;
 	i = 0;
@@ -91,7 +91,7 @@ static int	ft_split_start(char const *s, char c, int cword)
 	return (len);
 }
 
-char		**ft_strsplit(char const *s, char c)
+char			**ft_strsplit(char const *s, char c)
 {
 	char	**tab;
 	int		wrd;
@@ -102,7 +102,7 @@ char		**ft_strsplit(char const *s, char c)
 	if (s == NULL)
 		return (NULL);
 	wrd = ft_split_count(s, c);
-	if (!(tab = malloc(sizeof(char *) * (wrd + 1))))
+	if (!(tab = malloc(sizeof(char*) * (wrd + 1))))
 		return (NULL);
 	i = 0;
 	while (i < wrd)

@@ -6,7 +6,7 @@
 /*   By: otahirov <otahirov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/05 12:05:40 by otahirov          #+#    #+#             */
-/*   Updated: 2019/01/05 12:30:11 by otahirov         ###   ########.fr       */
+/*   Updated: 2019/01/05 17:09:11 by otahirov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ static char *join(char *buff, char *tab)
 		i = ft_strlen(buff);
 	if (tab)
 		j = ft_strlen(tab);
-	CHECK_NULL(ptr = (char *)malloc(sizeof(char) * (i + j + 1)));
+	ptr = (char *)malloc(sizeof(char) * (i + j + 1));
 	ft_memcpy(ptr, buff, i);
-	ft_memcpy(ptr, tab, j);
+	ft_memcpy(ptr + i, tab, j);
 	ptr[i + j] = '\0';
 	free(buff);
 	ft_bzero(tab, BUFF_SIZE + 1);
@@ -93,5 +93,5 @@ int			get_next_line(int const fd, char **line)
 		ft_strdel(&buff[fd]);
 		return (1);
 	}
-	return (0);
+	return (result);
 }
